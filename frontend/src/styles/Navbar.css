@@ -1,0 +1,16 @@
+.login {
+    width: 100px;
+}
+.login:hover {
+    color:#0d6efd !important;
+}
+
+.register {
+    width: 100px;
+}
+.register:hover {
+    color:#FFF !important;
+    background-color: #0d6efd !important;
+    border-width: 1.5px !important;
+    border-color: #FFF !important;
+}
