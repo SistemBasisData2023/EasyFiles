@@ -1,13 +1,7 @@
 import React from "react";
-import {
-  Container,
-  Navbar,
-  Nav,
-  Button,
-  Form,
-  FormControl,
-} from "react-bootstrap";
+import { Container, Navbar, Nav, Button } from "react-bootstrap";
 import "../styles/Navbar.css";
+import { Link } from "react-router-dom";
 
 export default function NavBar() {
   return (
@@ -18,19 +12,19 @@ export default function NavBar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav>
-            <Nav.Link href="/login">
+          <Nav className="ms-auto">
+            <Nav.Link as={Link} to="/login">
               <Button
                 variant="outline-light"
-                className="fw-bold login rounded-5"
+                className="fw-bold login rounded-1"
               >
                 Login
               </Button>
             </Nav.Link>
-            <Nav.Link eventKey={2} href="/signup">
+            <Nav.Link as={Link} to="/signup" eventKey={2}>
               <Button
                 variant="light"
-                className="text-primary fw-bold register rounded-5"
+                className="text-primary fw-bold register rounded-1"
               >
                 Register
               </Button>

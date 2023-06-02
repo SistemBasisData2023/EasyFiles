@@ -1,0 +1,17 @@
+.filter{
+    color: #0d6efd !important;
+    background-color: white !important;
+    padding: 2.5px !important;
+    border-color: #0d6efd !important;
+}
+
+.filter:hover{
+    color: #FFF !important;
+    background-color: #0d6efd !important;
+}
+
+.dropdown:hover{
+    background-color: #0d6efd !important;
+    color: #FFF !important;
+    border-radius: 6px !important;
+}
