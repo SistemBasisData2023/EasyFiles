@@ -57,11 +57,8 @@ const Login = () => {
 
                 <Button
                   variant="outline-primary"
-                  type="button"
+                  type="submit"
                   className="w-100 mt-3 fw-semibold rounded-3"
-                  onClick={() => {
-                    window.location.href = "/";
-                  }}
                 >
                   Login
                 </Button>

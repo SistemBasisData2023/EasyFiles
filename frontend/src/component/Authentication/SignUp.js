@@ -96,9 +96,6 @@ const Signup = () => {
                   type="submit"
                   className="w-100 mt-3 fw-semibold rounded-3"
                   disabled={isLoading}
-                  onClick={() => {
-                    window.location.href = "/";
-                  }}
                 >
                   Register
                 </Button>
