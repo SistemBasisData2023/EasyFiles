@@ -4,7 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import "../styles/Filter.css";
 
-export default function Filter() {
+export default function Filter({ onFilter }) {
+  function handleOnClick(option) {
+    onFilter(option);
+  }
+
   return (
     <>
       <Dropdown className="me-1">
@@ -12,10 +16,16 @@ export default function Filter() {
           <FontAwesomeIcon icon={faFilter} />
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          <Dropdown.Item className="dropdown">
+          <Dropdown.Item
+            className="dropdown"
+            onClick={() => handleOnClick("Sort Ascending")}
+          >
             Sort by Size Ascending
           </Dropdown.Item>
-          <Dropdown.Item className="dropdown">
+          <Dropdown.Item
+            className="dropdown"
+            onClick={() => handleOnClick("Sort Descending")}
+          >
             Sort by Size Descending
           </Dropdown.Item>
           <Dropdown.Item className="dropdown">

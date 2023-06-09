@@ -1,10 +1,15 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from "uuid";
 
-export default function AddFiles() {
+export default function AddFiles({ onAddFile }) {
   function handleUpload(e) {
-    console.log(e.target.files[0]);
+    const newFile = {
+      id: uuidv4(),
+      name: e.target.files[0].name,
+    };
+    onAddFile(newFile);
   }
   return (
     <>

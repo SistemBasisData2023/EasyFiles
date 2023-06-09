@@ -1,14 +1,29 @@
 import React, { useState } from "react";
 import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   async function validateForm(e) {
     e.preventDefault();
+
+    // await axios
+    //   .post("http://localhost:9999/login", {
+    //     username: username,
+    //     password: password,
+    //   })
+    //   .then((response) => {
+    //     alert(response.data.message);
+    //   })
+    //   .catch((error) => {
+    //     alert(error.message);
+    //   });
   }
 
   return (
@@ -29,16 +44,16 @@ const Login = () => {
                 </Alert>
               )}
               <Form onSubmit={validateForm}>
-                <Form.Group controlId="formBasicEmail">
+                <Form.Group controlId="formBasicUsername">
                   <Form.Label>
-                    <strong>Email</strong>
+                    <strong>Username</strong>
                   </Form.Label>
                   <Form.Control
-                    type="email"
-                    placeholder="email@address.com"
+                    type="text"
+                    placeholder="Username"
                     className="rounded-3"
                     required
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </Form.Group>
 
@@ -64,7 +79,7 @@ const Login = () => {
                 </Button>
               </Form>
               <div className="d-flex justify-content-between w-100 mt-1">
-                <Link to="/signup" className="text-decoration-none text-dark">
+                <Link to="/register" className="text-decoration-none text-dark">
                   Create an account
                 </Link>
                 <Link to="/" className="text-decoration-none">

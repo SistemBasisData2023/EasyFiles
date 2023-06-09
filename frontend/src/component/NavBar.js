@@ -21,7 +21,7 @@ export default function NavBar() {
                 Login
               </Button>
             </Nav.Link>
-            <Nav.Link as={Link} to="/signup" eventKey={2}>
+            <Nav.Link as={Link} to="/register" eventKey={2}>
               <Button
                 variant="light"
                 className="text-primary fw-bold register rounded-1"
