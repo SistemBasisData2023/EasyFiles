@@ -2,8 +2,10 @@ import React from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+//import uid
+import { v4 as uuidv4 } from "uuid";
 
-export default function AddFolder() {
+export default function AddFolder({ onAddFolder }) {
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState("");
 
@@ -17,6 +19,14 @@ export default function AddFolder() {
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    const newFolder = {
+      id: uuidv4(),
+      name: name,
+    };
+
+    onAddFolder(newFolder);
+    setOpen(false);
   }
 
   return (

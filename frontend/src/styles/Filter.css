@@ -1,17 +1,19 @@
-.filter{
+.filter {
     color: #0d6efd !important;
-    background-color: white !important;
+    background-color: transparent !important;
     padding: 2.5px !important;
     border-color: #0d6efd !important;
-}
-
-.filter:hover{
-    color: #FFF !important;
+  }
+  
+  .filter:hover,
+  .dropdown:hover .filter {
+    color: #fff !important;
     background-color: #0d6efd !important;
-}
-
-.dropdown:hover{
+  }
+  
+  .dropdown:hover {
     background-color: #0d6efd !important;
-    color: #FFF !important;
+    color: #fff !important;
     border-radius: 6px !important;
-}
+  }
+  
