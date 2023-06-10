@@ -10,6 +10,7 @@ import File from "./Files";
 export default function Dashboard() {
   const [folders, setFolders] = React.useState([]);
   const [files, setFiles] = React.useState([]);
+  const [search, setSearch] = React.useState("");
 
   function addFo(newFolder) {
     setFolders((prevFolders) => {
@@ -49,7 +50,7 @@ export default function Dashboard() {
   return (
     <>
       <div className="bg-light min-vh-100">
-        <Navbar />
+        <Navbar className="fixed-top" />
         <Container className="mt-3">
           <div className="d-flex align-items-center justify-content-between">
             <div>

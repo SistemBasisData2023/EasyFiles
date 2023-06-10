@@ -19,22 +19,24 @@ const Register = () => {
       return setError("Passwords don't match");
     }
 
-    // await axios
-    //   .post("http://localhost:9999/register", {
-    //     username: username,
-    //     nama: name,
-    //     password: password,
-    //   })
-    //   .then((response) => {
-    //     if (response.data.message === "Registration succesful") {
-    //       navigate("/login");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     alert(error.message);
-    //     setError(error.data.message);
-    //   });
+    await axios
+      .post("http://localhost:9999/register", {
+        username: username,
+        nama: name,
+        password: password,
+      })
+      .then((response) => {
+        if (response.data.message === "Registration succesful") {
+          navigate("/login");
+        }
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
   }
+  console.log(username);
+  console.log(name);
+  console.log(password);
 
   return (
     <div className="bg-primary">

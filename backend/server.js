@@ -2,8 +2,17 @@
 const express = require("express");
 const bp = require("body-parser");
 const app = express();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 
 //Dotenv init
 const dotenv = require("dotenv");
@@ -31,7 +40,8 @@ firebase.initializeApp(firebaseConfig);
 //PostgreSQL database init
 const { Client } = require("pg");
 const db = new Client({
-  connectionString: process.env.SQL_CONNSTRING,
+  connectionString:
+    "postgres://agungfir20:s1FYO0nBvxiE@ep-yellow-shape-568138.ap-southeast-1.aws.neon.tech/test_pa",
   sslmode: "require",
   ssl: true,
 });
@@ -60,11 +70,11 @@ const login = async (req, res) => {
     const { username, password } = req.body;
 
     queryResult = await db.query(
-      `SELECT * FROM userTable WHERE userName = '${username}';`
+      `SELECT * FROM usertable WHERE userName = '${username}';`
     );
 
     if (queryResult.rows.length == 0) {
-      res.send("Invalid username or password");
+      res.send("Invalid Username or Password");
       return;
     }
 
@@ -73,7 +83,7 @@ const login = async (req, res) => {
     const match = await bcrypt.compare(password, userHash);
 
     if (!match) {
-      res.send("Invalid username or password");
+      res.send("Invalid Username or Password");
       return;
     }
 
@@ -82,9 +92,11 @@ const login = async (req, res) => {
       nama: user.namapengguna,
     };
 
-    userToken = jwt.sign(userIdentifier, process.env.JWT_SECRET, {
+    userToken = jwt.sign(userIdentifier, "secretaccesstokenhere", {
       expiresIn: "1h",
     });
+
+    res.cookie("token", userToken);
 
     res.json({
       message: "Login succesful",
@@ -133,6 +145,10 @@ app.post(`/register`, register);
 app.post(`/logout`, async (req, res) => {
   try {
     //Implement this later
+    res.clearCookie("token");
+    res.json({
+      message: "Logout succesful",
+    });
   } catch (error) {
     res.json({
       message: "Unknown Error",
@@ -141,20 +157,34 @@ app.post(`/logout`, async (req, res) => {
   }
 });
 
+app.get(`/`, authUser, (req, res) => {
+  return res.json({
+    message: "Success",
+    user: req.user,
+  });
+});
+
 function authUser(req, res, nex) {
-  const authHeader = req.headers["authorization"];
-  if (authHeader == null) {
+  // const authHeader = req.headers["authorization"];
+  // if (authHeader == null) {
+  //   res.send("Error: No session token provided");
+  //   return;
+  // }
+  // const token = authHeader.split(" ")[1];
+
+  const token = req.cookies.token;
+
+  if (token == null) {
     res.send("Error: No session token provided");
     return;
+  } else {
+    jwt.verify(token, "secretaccesstokenhere", (err, payload) => {
+      if (err) res.send("Error: Token verification failed");
+      req.user = payload.username;
+      req.nama = payload.nama;
+      nex();
+    });
   }
-  const token = authHeader.split(" ")[1];
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-    if (err) res.send("Error: Token verification failed");
-    req.user = payload.username;
-    req.nama = payload.nama;
-    nex();
-  });
 }
 
 //====== FILE UPLOAD/DOWNLOAD API ======

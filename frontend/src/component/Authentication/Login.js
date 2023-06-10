@@ -12,19 +12,26 @@ const Login = () => {
 
   async function validateForm(e) {
     e.preventDefault();
-
-    // await axios
-    //   .post("http://localhost:9999/login", {
-    //     username: username,
-    //     password: password,
-    //   })
-    //   .then((response) => {
-    //     alert(response.data.message);
-    //   })
-    //   .catch((error) => {
-    //     alert(error.message);
-    //   });
+    //fetch data dari server.js di folder backend
+    axios.defaults.withCredentials = true;
+    await axios
+      .post("http://localhost:9999/login", {
+        username: username,
+        password: password,
+      })
+      .then((res) => {
+        if (res.data.message === "Login succesful") {
+          navigate("/");
+        } else {
+          setError(res.data);
+        }
+      })
+      .catch((err) => {
+        alert(err);
+      });
   }
+  console.log(username);
+  console.log(password);
 
   return (
     <>
@@ -66,7 +73,7 @@ const Login = () => {
                     placeholder="******"
                     className="rounded-3"
                     required
-                    onAbort={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </Form.Group>
 
