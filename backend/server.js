@@ -9,10 +9,9 @@ app.use(bp.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "http://localhost:3000",
-    credentials: true,
   })
 );
-app.use(cookieParser());
+// app.use(cookieParser());
 
 //Dotenv init
 const dotenv = require("dotenv");
@@ -28,12 +27,12 @@ const {
   updateMetadata,
 } = require("firebase/storage");
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_APIKEY,
-  authDomain: process.env.FIREBASE_AUTHDOMAIN,
-  projectId: process.env.FIREBASE_PROJECTID,
-  storageBucket: process.env.FIREBASE_STORAGEBUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
-  appId: process.env.FIREBASE_APPID,
+  apiKey: "AIzaSyCIgEfUm6wsJ0kD28tb3_Y0FZa9RC6MO5M",
+  authDomain: "easyfiles-1cf32.firebaseapp.com",
+  projectId: "easyfiles-1cf32",
+  storageBucket: "easyfiles-1cf32.appspot.com",
+  messagingSenderId: "863853774202",
+  appId: "1:863853774202:web:65a52ec936c852c0e202c3",
 };
 firebase.initializeApp(firebaseConfig);
 
@@ -96,7 +95,7 @@ const login = async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.cookie("token", userToken);
+    // res.cookie("token", userToken);
 
     res.json({
       message: "Login succesful",
@@ -142,21 +141,6 @@ const register = async (req, res) => {
 };
 app.post(`/register`, register);
 
-app.post(`/logout`, async (req, res) => {
-  try {
-    //Implement this later
-    res.clearCookie("token");
-    res.json({
-      message: "Logout succesful",
-    });
-  } catch (error) {
-    res.json({
-      message: "Unknown Error",
-      error: error,
-    });
-  }
-});
-
 app.get(`/`, authUser, (req, res) => {
   return res.json({
     message: "Success",
@@ -165,14 +149,14 @@ app.get(`/`, authUser, (req, res) => {
 });
 
 function authUser(req, res, nex) {
-  // const authHeader = req.headers["authorization"];
-  // if (authHeader == null) {
-  //   res.send("Error: No session token provided");
-  //   return;
-  // }
-  // const token = authHeader.split(" ")[1];
+  const authHeader = req.headers["authorization"];
+  if (authHeader == null) {
+    res.send("Error: No session token provided");
+    return;
+  }
+  const token = authHeader.split(" ")[1];
 
-  const token = req.cookies.token;
+  // const token = req.cookies.token;
 
   if (token == null) {
     res.send("Error: No session token provided");
@@ -193,7 +177,7 @@ const uploadFile = async (req, res) => {
     const fileToUpload = req.file;
 
     if (fileToUpload == null) {
-      res.send("No file attached");
+      return res.send("No file attached");
     }
 
     const { skemaAkses, currentDir } = req.body;
@@ -227,7 +211,19 @@ const uploadFile = async (req, res) => {
 			'${fileLink}'
 			)`);
 
-    res.send("File succesfuly uploaded");
+    res.json({
+      message: "File uploaded",
+      data: {
+        fileId: fileId,
+        fileName: fileToUpload.originalname,
+        fileSize: filesize,
+        fileLink: fileLink,
+        skemaAkses: skemaAkses,
+        uploadTime: currentTime,
+        currentDir: currentDir,
+        userPemilik: req.user,
+      },
+    });
   } catch (err) {
     res.send("Unknown error while uploading file");
   }

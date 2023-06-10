@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "./NavBar";
 import { Container } from "react-bootstrap";
 import AddFolder from "./AddFolder";
@@ -12,13 +12,12 @@ export default function Dashboard() {
   const [files, setFiles] = React.useState([]);
   const [search, setSearch] = React.useState("");
 
-  function addFo(newFolder) {
-    setFolders((prevFolders) => {
-      return [...prevFolders, newFolder];
-    });
-  }
+  useEffect(() => {
+    const storedFile = JSON.parse(localStorage.getItem("dataFile")) || [];
+    setFiles(storedFile);
+  }, []);
 
-  function addFi(newFile) {
+  function addFo(newFile) {
     setFiles((prevFiles) => {
       return [...prevFiles, newFile];
     });
@@ -46,6 +45,7 @@ export default function Dashboard() {
         break;
     }
   }
+  console.log(files);
 
   return (
     <>
@@ -58,7 +58,7 @@ export default function Dashboard() {
             </div>
             <div className="d-flex">
               <Filter onFilter={handleFilter} />
-              <AddFiles onAddFile={addFi} />
+              <AddFiles />
               <AddFolder onAddFolder={addFo} />
             </div>
           </div>

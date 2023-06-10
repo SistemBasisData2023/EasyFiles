@@ -10,39 +10,44 @@ import {
 import "../styles/Navbar.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
   const [search, setSearch] = React.useState("");
   const [auth, setAuth] = React.useState(false);
   const [user, setUser] = React.useState("");
+  const navigate = useNavigate();
 
   function handleSearch(e) {
     setSearch(e.target.value);
   }
 
-  useEffect(() => {
-    axios.get("http://localhost:9999/").then((res) => {
+  const fetchData = () => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+
+    axios.get(`http://localhost:9999/`, config).then((res) => {
       console.log(res.data);
       if (res.data.message === "Success") {
         setAuth(true);
         setUser(res.data.user);
       }
     });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   function handleLogout() {
-    axios
-      .get("http://localhost:9999/logout")
-      .then((res) => {
-        if (res.data.message === "Logout succesful") {
-          window.location.reload(false);
-        } else {
-          alert("Something went wrong");
-        }
-      })
-      .catch((err) => {
-        alert(err);
-      });
+    localStorage.clear();
+    setAuth(false);
+    setUser("");
+    navigate("/");
   }
 
   console.log(auth);
@@ -77,7 +82,7 @@ export default function NavBar() {
               <Button
                 variant="light"
                 className="fw-bold rounded-1 register text-primary"
-                onCanPlay={handleLogout}
+                onClick={handleLogout}
               >
                 Logout
               </Button>
