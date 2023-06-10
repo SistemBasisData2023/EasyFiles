@@ -148,7 +148,7 @@ app.get(`/`, authUser, (req, res) => {
   });
 });
 
-function authUser(req, res, nex) {
+function authUser(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (authHeader == null) {
     res.send("Error: No session token provided");
@@ -166,7 +166,7 @@ function authUser(req, res, nex) {
       if (err) res.send("Error: Token verification failed");
       req.user = payload.username;
       req.nama = payload.nama;
-      nex();
+      next();
     });
   }
 }
@@ -246,8 +246,8 @@ const downloadFile = async (req, res) => {
     filesToDownload = queryResult.rows[0];
 
     const accessDenied =
-      filesToDownload.skemaakses == `Restricted` &&
-      filesToDownload.userpemilik != req.username;
+      filesToDownload.skemaakses === `Restricted` &&
+      filesToDownload.userpemilik !== req.username;
     if (accessDenied) {
       res.send("Access denied");
       return;
@@ -259,6 +259,28 @@ const downloadFile = async (req, res) => {
   }
 };
 app.get(`/:fileId/download`, authUser, downloadFile);
+
+const getUserFiles = async (req, res) => {
+  try {
+    const queryResult = await db.query(
+      `SELECT * FROM files WHERE userpemilik = '${req.user}'`
+    );
+
+    const notFound = queryResult.rows.length == 0;
+    if (notFound) {
+      res.send("Files not found");
+      return;
+    }
+
+    res.json({
+      message: "User files retrieved",
+      data: queryResult.rows,
+    });
+  } catch (err) {
+    res.send(err);
+  }
+};
+app.get(`/getFile`, authUser, getUserFiles);
 
 app.listen(9999, () => {
   console.log("Listening to Port 9999.");

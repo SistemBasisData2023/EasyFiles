@@ -6,15 +6,42 @@ import AddFiles from "./AddFiles";
 import Filter from "./Filter";
 import Folder from "./Folder";
 import File from "./Files";
+import axios from "axios";
 
 export default function Dashboard() {
   const [folders, setFolders] = React.useState([]);
   const [files, setFiles] = React.useState([]);
   const [search, setSearch] = React.useState("");
 
+  const getFile = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+
+    axios
+      .get(
+        `http://localhost:9999/getFile`,
+        {
+          user: localStorage.getItem("username"),
+        },
+        config
+      )
+      .then((res) => {
+        if (res.data.message === "Success") {
+          setFiles(res.data.data);
+          alert(res.data.data);
+        } else {
+          alert(res.data);
+        }
+      });
+  };
+
   useEffect(() => {
-    const storedFile = JSON.parse(localStorage.getItem("dataFile")) || [];
-    setFiles(storedFile);
+    // const storedFile = JSON.parse(localStorage.getItem("dataFile")) || [];
+    // setFiles(storedFile);
+    getFile();
   }, []);
 
   function addFo(newFile) {
