@@ -41,6 +41,16 @@ export default function Dashboard() {
           return [...prevFolders].sort((a, b) => b.name.localeCompare(a.name));
         });
         break;
+      case "Sort Date Ascending":
+        setFiles((prevFiles) => {
+          return [...prevFiles].sort((a, b) => a.date.localeCompare(b.date));
+        });
+        break;
+      case "Sort Date Descending":
+        setFiles((prevFiles) => {
+          return [...prevFiles].sort((a, b) => b.date.localeCompare(a.date));
+        });
+        break;
       default:
         break;
     }

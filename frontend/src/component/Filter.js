@@ -28,10 +28,16 @@ export default function Filter({ onFilter }) {
           >
             Sort by Size Descending
           </Dropdown.Item>
-          <Dropdown.Item className="dropdown">
+          <Dropdown.Item
+            className="dropdown"
+            onClick={() => handleOnClick("Sort Date Ascending")}
+          >
             Sort by Date Ascending
           </Dropdown.Item>
-          <Dropdown.Item className="dropdown">
+          <Dropdown.Item
+            className="dropdown"
+            onClick={() => handleOnClick("Sort Date Descending")}
+          >
             Sort by Date Descending
           </Dropdown.Item>
         </Dropdown.Menu>
