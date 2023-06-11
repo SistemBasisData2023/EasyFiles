@@ -12,7 +12,6 @@ CREATE TABLE public.files (
     directoryid character varying(32) NOT NULL,
     userpemilik character varying(255) NOT NULL,
     filelink text NOT NULL
-    path text NOT NULL
 );
 
 CREATE TABLE public.folder (
@@ -22,7 +21,6 @@ CREATE TABLE public.folder (
     tanggalpembuatan timestamp without time zone NOT NULL,
     rootfolderid character varying(32) NOT NULL,
     userpemilik character varying(255) NOT NULL
-    path text NOT NULL
 );
 
 CREATE TABLE public.usertable (
