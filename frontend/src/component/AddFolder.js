@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
@@ -11,6 +11,7 @@ export default function AddFolder() {
   const [open, setOpen] = React.useState(false);
   const [folderName, setFolderName] = React.useState("");
   const [access, setAccess] = React.useState("Restricted");
+  const [token, setToken] = React.useState(null);
 
   function openModal() {
     setOpen(true);
@@ -20,6 +21,10 @@ export default function AddFolder() {
     setOpen(false);
     setFolderName("");
   }
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -54,7 +59,12 @@ export default function AddFolder() {
 
   return (
     <>
-      <Button onClick={openModal} variant="outline-primary" size="sm">
+      <Button
+        onClick={openModal}
+        variant="outline-primary"
+        size="sm"
+        disabled={!token}
+      >
         <FontAwesomeIcon icon={faFolderPlus} />
       </Button>
       <Modal show={open} onHide={closeModal}>
