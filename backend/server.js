@@ -38,21 +38,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 //PostgreSQL database init
-const { Client } = require("pg");
-const db = new Client({
-  connectionString:
-    "postgres://agungfir20:s1FYO0nBvxiE@ep-yellow-shape-568138.ap-southeast-1.aws.neon.tech/test_pa",
+const { Pool } = require("pg");
+const db = new Pool({
+  connectionString: process.env.SQL_CONNSTRING,
   sslmode: "require",
   ssl: true,
 });
-db.connect((err) => {
+checkForError = (err) => {
   if (err) {
     console.log(err);
-    db.connect();
     return;
   }
-  console.log("Database succesfuly reached.");
-});
+  //console.log("Database succesfuly reached.");
+}
+//db.connect(checkForError);
 
 //Multer init
 const multer = require("multer");
@@ -172,6 +171,11 @@ const register = async (req, res) => {
 
     res.json({
       message: "Registration succesful",
+      data: {
+		  username: username,
+		  nama: nama,
+		  personalfolder: folderId
+	  }
     });
   } catch (error) {
     res.json({
@@ -223,6 +227,7 @@ function authUser(req, res, next) {
 //====== FILE UPLOAD/DOWNLOAD API ======
 const uploadFile = async (req, res) => {
   try {
+	
     //Retrieve relevant data
     const fileToUpload = req.file;
 	const { skemaAkses } = req.body;
@@ -328,7 +333,7 @@ const downloadFile = async (req, res) => {
 	//Redirect to download link
     res.redirect(filesToDownload.filelink);
     
-  } catch (err) {
+  } catch (error) {
 	res.json({
 		message: "Error whlle downloading",
 		error: error,
@@ -654,7 +659,6 @@ const filesViewQuery = (param) => {
 	`) ` +
 	`SELECT * FROM lv4` + query_sortBy;
 	return files_finalQuery
-	return files_finalQuery;
 }
 const viewFolderContent = async (req, res) => {
 	try{
@@ -702,8 +706,8 @@ const viewFolderContent = async (req, res) => {
 		const filesViewResult = await db.query(filesViewQuery(filesParam));
 		
 		res.json({
-			folder: folderViewResult,
-			files: filesViewResult
+			folder: folderViewResult.rows,
+			files: filesViewResult.rows
 		});
 		
 	}
@@ -713,8 +717,6 @@ const viewFolderContent = async (req, res) => {
 			error: err
 		});
 	}
-
-	
 }
 app.get(`/:rootFolderId/view`, authUser, viewFolderContent);
 
@@ -746,8 +748,7 @@ const deleteFile = async (req, res) => {
 		await db.query(`DELETE FROM files WHERE fileId = '${fileId}'`);
 	
 		res.send("File successfully deleted");
-	} catch (err) {
-		console.error("Error searching in table:", error);
+	} catch (error) {
 		res.json({
 			message: "Error searching in table",
 			error: error,
@@ -781,7 +782,6 @@ const searchInTable = async (req, res) => {
 			data: result.rows,
 		});
 	} catch (error) {
-		console.error("Error searching in table:", error);
 		res.json({
 			message: "Error searching in table",
 			error: error,
@@ -790,29 +790,54 @@ const searchInTable = async (req, res) => {
 };
 app.get("/search", authUser, searchInTable);
 
-/*
+
+// ====== GET-ALL FILE/FOLDER API =====
 const getUserFiles = async (req, res) => {
   try {
     const queryResult = await db.query(
-      `SELECT * FROM files WHERE userpemilik = '${req.user}'`
+      `SELECT * FROM files`
     );
 
     const notFound = queryResult.rows.length == 0;
-    if (notFound) {
-      res.send("Files not found");
-      return;
-    }
+    if (notFound) throw "Files not found";
 
     res.json({
       message: "User files retrieved",
       data: queryResult.rows,
     });
-  } catch (err) {
-    res.send(err);
+  } catch (error) {
+		res.json({
+			message: "Error fetching files",
+			error: error,
+		});
   }
 };
 app.get(`/getFile`, authUser, getUserFiles);
-*/
+
+const getUserFolder = async (req, res) => {
+  await db.connect(checkForError);
+  try {
+    const queryResult = await db.query(
+      `SELECT * FROM folder`
+    );
+
+    const notFound = queryResult.rows.length == 0;
+    if (notFound) throw "Folder not found";
+
+    res.json({
+      message: "User folder retrieved",
+      data: queryResult.rows,
+    });
+  } catch (error) {
+	res.json({
+		message: "Error fetching folder",
+		error: error,
+	});
+   }
+  await db.end()
+};
+app.get(`/getFolder`, authUser, getUserFolder);
+
 
 app.listen(9999, () => {
   console.log("Listening to Port 9999.");
