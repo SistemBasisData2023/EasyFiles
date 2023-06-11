@@ -4,7 +4,7 @@ Online File Storage and Management
 
 ## Overview
 
-Proyek ini bertujuan untuk menciptakan sebuah sistem penyimpanan file secara online yang berbasis pada ExpressJS, PostgreSQL, dan Google Firebase Storage untuk back-end, dan ....... untuk front-end.
+Proyek ini bertujuan untuk menciptakan sebuah sistem penyimpanan file secara online yang berbasis pada ExpressJS, PostgreSQL, dan Google Firebase Storage untuk back-end, dan react untuk front-end.
 
 User dapat melakukan register dan login akun. Untuk menangani session, digunakan JWT (JSON Web Token) yang akan diberikan pada saat login, serta akan digunakan untuk verifikasi identitas user selama berada di website.
 
