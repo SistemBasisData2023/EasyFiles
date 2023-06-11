@@ -11,7 +11,9 @@ import axios from "axios";
 export default function Dashboard() {
   const [folders, setFolders] = React.useState([]);
   const [files, setFiles] = React.useState([]);
+  const [initialFile, setInitialFile] = React.useState([]);
   const [search, setSearch] = React.useState("");
+  const [user, setUser] = React.useState("");
 
   const getFile = () => {
     const config = {
@@ -29,12 +31,13 @@ export default function Dashboard() {
         config
       )
       .then((res) => {
-        if (res.data.message === "Success") {
+        if (res.data.message === "Files retrieved") {
           setFiles(res.data.data);
-          alert(res.data.data);
-        } else {
-          alert(res.data);
+          setInitialFile(res.data.data);
         }
+      })
+      .catch((err) => {
+        alert(err);
       });
   };
 
@@ -42,6 +45,7 @@ export default function Dashboard() {
     // const storedFile = JSON.parse(localStorage.getItem("dataFile")) || [];
     // setFiles(storedFile);
     getFile();
+    setUser(localStorage.getItem("username"));
   }, []);
 
   function addFo(newFile) {
@@ -51,10 +55,13 @@ export default function Dashboard() {
   }
 
   function handleFilter(filter) {
+    setFiles(initialFile);
     switch (filter) {
       case "Sort Ascending":
         setFiles((prevFiles) => {
-          return [...prevFiles].sort((a, b) => a.name.localeCompare(b.name));
+          return [...prevFiles].sort((a, b) =>
+            a.namafile.localeCompare(b.namafile)
+          );
         });
         setFolders((prevFolders) => {
           return [...prevFolders].sort((a, b) => a.name.localeCompare(b.name));
@@ -62,7 +69,9 @@ export default function Dashboard() {
         break;
       case "Sort Descending":
         setFiles((prevFiles) => {
-          return [...prevFiles].sort((a, b) => b.name.localeCompare(a.name));
+          return [...prevFiles].sort((a, b) =>
+            b.namafile.localeCompare(a.namafile)
+          );
         });
         setFolders((prevFolders) => {
           return [...prevFolders].sort((a, b) => b.name.localeCompare(a.name));
@@ -70,19 +79,41 @@ export default function Dashboard() {
         break;
       case "Sort Date Ascending":
         setFiles((prevFiles) => {
-          return [...prevFiles].sort((a, b) => a.date.localeCompare(b.date));
+          return [...prevFiles].sort((a, b) =>
+            a.tanggalupload.localeCompare(b.tanggalupload)
+          );
         });
         break;
       case "Sort Date Descending":
         setFiles((prevFiles) => {
-          return [...prevFiles].sort((a, b) => b.date.localeCompare(a.date));
+          return [...prevFiles].sort((a, b) =>
+            b.tanggalupload.localeCompare(a.tanggalupload)
+          );
         });
         break;
+      case "FreeAccess":
+        setFiles((prevFiles) => {
+          const filteredFiles = prevFiles.filter(
+            (file) => file.skemaakses === "FreeAccess"
+          );
+          return [...filteredFiles];
+        });
+        break;
+      case "Own":
+        setFiles((prevFiles) => {
+          const filteredFiles = prevFiles.filter(
+            (file) => file.userpemilik === user
+          );
+          return [...filteredFiles];
+        });
+        break;
+
       default:
+        setFiles(...initialFile);
         break;
     }
   }
-  console.log(files);
+  console.log(initialFile);
 
   return (
     <>

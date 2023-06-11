@@ -6,11 +6,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
+app.use(cors());
 // app.use(cookieParser());
 
 //Dotenv init
@@ -262,9 +258,7 @@ app.get(`/:fileId/download`, authUser, downloadFile);
 
 const getUserFiles = async (req, res) => {
   try {
-    const queryResult = await db.query(
-      `SELECT * FROM files WHERE userpemilik = '${req.user}'`
-    );
+    const queryResult = await db.query(`SELECT * FROM files`);
 
     const notFound = queryResult.rows.length == 0;
     if (notFound) {
@@ -273,14 +267,14 @@ const getUserFiles = async (req, res) => {
     }
 
     res.json({
-      message: "User files retrieved",
+      message: "Files retrieved",
       data: queryResult.rows,
     });
   } catch (err) {
     res.send(err);
   }
 };
-app.get(`/getFile`, authUser, getUserFiles);
+app.get(`/getFile`, getUserFiles);
 
 app.listen(9999, () => {
   console.log("Listening to Port 9999.");

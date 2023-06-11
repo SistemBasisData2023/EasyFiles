@@ -99,12 +99,10 @@ const Login = () => {
                   Login
                 </Button>
               </Form>
-              <div className="d-flex justify-content-between w-100 mt-1">
-                <Link to="/register" className="text-decoration-none text-dark">
-                  Create an account
-                </Link>
-                <Link to="/" className="text-decoration-none">
-                  Forgot Password?
+              <div className="d-flex justify-content-center w-100 mt-1">
+                Don't have an account?&nbsp;
+                <Link to="/register" className="text-decoration-none">
+                  Register
                 </Link>
               </div>
             </Card>
