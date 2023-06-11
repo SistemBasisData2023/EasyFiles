@@ -28,6 +28,7 @@ const Register = () => {
       .then((response) => {
         if (response.data.message === "Registration succesful") {
           navigate("/login");
+          alert("Registration succesful");
         }
       })
       .catch((error) => {

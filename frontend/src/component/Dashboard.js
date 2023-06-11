@@ -7,29 +7,20 @@ import Filter from "./Filter";
 import Folder from "./Folder";
 import File from "./Files";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [folders, setFolders] = React.useState([]);
   const [files, setFiles] = React.useState([]);
   const [initialFile, setInitialFile] = React.useState([]);
+  const [initialFolder, setInitialFolder] = React.useState([]);
   const [search, setSearch] = React.useState("");
   const [user, setUser] = React.useState("");
+  const navigate = useNavigate();
 
   const getFile = () => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    };
-
     axios
-      .get(
-        `http://localhost:9999/getFile`,
-        {
-          user: localStorage.getItem("username"),
-        },
-        config
-      )
+      .get(`http://localhost:9999/getFile`)
       .then((res) => {
         if (res.data.message === "Files retrieved") {
           setFiles(res.data.data);
@@ -41,21 +32,31 @@ export default function Dashboard() {
       });
   };
 
+  const getFolder = () => {
+    axios
+      .get(`http://localhost:9999/getFolder`)
+      .then((res) => {
+        if (res.data.message === "Folder retrieved") {
+          setFolders(res.data.data);
+          setInitialFolder(res.data.data);
+        }
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
+
   useEffect(() => {
     // const storedFile = JSON.parse(localStorage.getItem("dataFile")) || [];
     // setFiles(storedFile);
     getFile();
+    getFolder();
     setUser(localStorage.getItem("username"));
   }, []);
 
-  function addFo(newFile) {
-    setFiles((prevFiles) => {
-      return [...prevFiles, newFile];
-    });
-  }
-
   function handleFilter(filter) {
     setFiles(initialFile);
+    setFolders(initialFolder);
     switch (filter) {
       case "Sort Ascending":
         setFiles((prevFiles) => {
@@ -64,7 +65,9 @@ export default function Dashboard() {
           );
         });
         setFolders((prevFolders) => {
-          return [...prevFolders].sort((a, b) => a.name.localeCompare(b.name));
+          return [...prevFolders].sort((a, b) =>
+            a.namafolder.localeCompare(b.namafolder)
+          );
         });
         break;
       case "Sort Descending":
@@ -74,7 +77,9 @@ export default function Dashboard() {
           );
         });
         setFolders((prevFolders) => {
-          return [...prevFolders].sort((a, b) => b.name.localeCompare(a.name));
+          return [...prevFolders].sort((a, b) =>
+            b.namafolder.localeCompare(a.namafolder)
+          );
         });
         break;
       case "Sort Date Ascending":
@@ -83,11 +88,21 @@ export default function Dashboard() {
             a.tanggalupload.localeCompare(b.tanggalupload)
           );
         });
+        setFolders((prevFolders) => {
+          return [...prevFolders].sort((a, b) =>
+            a.tanggalpembuatan.localeCompare(b.tanggalpembuatan)
+          );
+        });
         break;
       case "Sort Date Descending":
         setFiles((prevFiles) => {
           return [...prevFiles].sort((a, b) =>
             b.tanggalupload.localeCompare(a.tanggalupload)
+          );
+        });
+        setFolders((prevFolders) => {
+          return [...prevFolders].sort((a, b) =>
+            b.tanggalpembuatan.localeCompare(a.tanggalpembuatan)
           );
         });
         break;
@@ -98,6 +113,12 @@ export default function Dashboard() {
           );
           return [...filteredFiles];
         });
+        setFolders((prevFolders) => {
+          const fileteredFolders = prevFolders.filter(
+            (folder) => folder.skemaakses === "FreeAccess"
+          );
+          return [...fileteredFolders];
+        });
         break;
       case "Own":
         setFiles((prevFiles) => {
@@ -106,19 +127,27 @@ export default function Dashboard() {
           );
           return [...filteredFiles];
         });
+        setFolders((prevFolders) => {
+          const fileteredFolders = prevFolders.filter(
+            (folder) => folder.userpemilik === user
+          );
+          return [...fileteredFolders];
+        });
         break;
 
       default:
         setFiles(...initialFile);
+        setFolders(...initialFolder);
         break;
     }
   }
-  console.log(initialFile);
+
+  console.log(search);
 
   return (
     <>
       <div className="bg-light min-vh-100">
-        <Navbar className="fixed-top" />
+        <Navbar className="fixed-top" onSearch={setSearch} />
         <Container className="mt-3">
           <div className="d-flex align-items-center justify-content-between">
             <div>
@@ -127,7 +156,7 @@ export default function Dashboard() {
             <div className="d-flex">
               <Filter onFilter={handleFilter} />
               <AddFiles />
-              <AddFolder onAddFolder={addFo} />
+              <AddFolder />
             </div>
           </div>
           {folders.length > 0 && <p className="fs-6 mt-1">Folder/</p>}
@@ -140,11 +169,19 @@ export default function Dashboard() {
           </div>
           {folders.length > 0 && files.length > 0 && <hr />}
           <div className="d-flex flex-wrap">
-            {files.map((file) => (
-              <div style={{ maxWidth: "200px" }} className="pe-2 mb-2">
-                <File key={file.id} file={file} />
-              </div>
-            ))}
+            {files
+              .filter((file) => {
+                return search.toLocaleLowerCase() === ""
+                  ? file
+                  : file.namafile
+                      .toLocaleLowerCase()
+                      .includes(search.toLocaleLowerCase());
+              })
+              .map((file) => (
+                <div style={{ maxWidth: "200px" }} className="pe-2 mb-2">
+                  <File key={file.id} file={file} />
+                </div>
+              ))}
           </div>
         </Container>
       </div>

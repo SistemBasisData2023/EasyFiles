@@ -10,7 +10,7 @@ import "../styles/Files.css";
 export default function AddFiles() {
   const [open, setOpen] = React.useState(false);
   const [file, setFile] = React.useState(null);
-  const [access, setAccess] = React.useState("");
+  const [access, setAccess] = React.useState("Restricted");
   const [token, setToken] = React.useState(null);
 
   function openModal() {
@@ -19,7 +19,6 @@ export default function AddFiles() {
 
   function closeModal() {
     setOpen(false);
-    setAccess("");
     setFile(null);
   }
 
@@ -31,11 +30,10 @@ export default function AddFiles() {
     e.preventDefault();
     axios
       .post(
-        `http://localhost:9999/upload`,
+        `http://localhost:9999/${localStorage.getItem("folder")}/upload`,
         {
           files: file,
           skemaAkses: access,
-          currentDir: 0,
         },
         {
           headers: {
@@ -48,6 +46,7 @@ export default function AddFiles() {
         if (res.data.message === "File uploaded") {
           alert("File succesfuly uploaded");
           setOpen(false);
+          window.location.reload(true);
         }
         console.log(res.data);
       })
@@ -55,8 +54,6 @@ export default function AddFiles() {
         alert(err);
       });
   }
-
-  console.log(access);
 
   return (
     <>
@@ -79,9 +76,10 @@ export default function AddFiles() {
               <Form.Select
                 aria-label="Access"
                 className="access"
+                value={access}
                 onChange={(e) => setAccess(e.target.value)}
               >
-                <option defaultValue="Restricted">Restricted</option>
+                <option value="Restricted">Restricted</option>
                 <option value="FreeAccess">Free Access</option>
               </Form.Select>
             </Form.Group>

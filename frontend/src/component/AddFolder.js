@@ -4,10 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 //import uid
 import { v4 as uuidv4 } from "uuid";
+import Folder from "./Folder";
+import axios from "axios";
 
-export default function AddFolder({ onAddFolder }) {
+export default function AddFolder() {
   const [open, setOpen] = React.useState(false);
-  const [name, setName] = React.useState("");
+  const [folderName, setFolderName] = React.useState("");
+  const [access, setAccess] = React.useState("Restricted");
 
   function openModal() {
     setOpen(true);
@@ -15,19 +18,38 @@ export default function AddFolder({ onAddFolder }) {
 
   function closeModal() {
     setOpen(false);
-    setName("");
+    setFolderName("");
   }
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    const newFolder = {
-      id: uuidv4(),
-      name: name,
-    };
-
-    onAddFolder(newFolder);
-    setOpen(false);
+    axios
+      .post(
+        `http://localhost:9999/${localStorage.getItem(
+          "folder"
+        )}/createNewFolder`,
+        {
+          namaFolder: folderName,
+          skemaAkses: access,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data === "New folder succesfuly created") {
+          alert("Folder succesfuly created");
+          setOpen(false);
+          window.location.reload(true);
+        }
+        console.log(res.data);
+      })
+      .catch((err) => {
+        alert(err);
+      });
   }
 
   return (
@@ -36,18 +58,32 @@ export default function AddFolder({ onAddFolder }) {
         <FontAwesomeIcon icon={faFolderPlus} />
       </Button>
       <Modal show={open} onHide={closeModal}>
-        <Form onSubmit={handleSubmit}>
+        <Form>
           <Modal.Body>
             <Form.Group>
               <Form.Label>
-                <strong>Add Folder</strong>
+                <strong>Folder Access</strong>
+              </Form.Label>
+              <Form.Select
+                aria-label="Access"
+                className="access"
+                value={access}
+                onChange={(e) => setAccess(e.target.value)}
+              >
+                <option value="Restricted">Restricted</option>
+                <option value="FreeAccess">Free Access</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>
+                <strong>Folder Name</strong>
               </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter folder name"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={folderName}
+                onChange={(e) => setFolderName(e.target.value)}
               />
             </Form.Group>
           </Modal.Body>
@@ -55,7 +91,7 @@ export default function AddFolder({ onAddFolder }) {
             <Button variant="outline-primary" onClick={closeModal}>
               Close
             </Button>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" onClick={handleSubmit}>
               Add Folder
             </Button>
           </Modal.Footer>

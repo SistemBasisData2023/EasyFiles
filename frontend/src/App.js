@@ -10,6 +10,7 @@ function App() {
     <Router>
       <Routes>
         <Route exact path="/" element={<Dashboard />} />
+        <Route exact path="/folder/:folderId" element={<Dashboard />} />
         <Route exact path="/register" element={<Register />} />
         <Route exact path="/login" element={<Login />} />
       </Routes>

@@ -35,6 +35,7 @@ const Login = () => {
         if (res.data.message === "Login succesful") {
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("username", res.data.data.username);
+          localStorage.setItem("folder", res.data.data.folder);
           navigate("/");
         } else {
           setError(res.data);

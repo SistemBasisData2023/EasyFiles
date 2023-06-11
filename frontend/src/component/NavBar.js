@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function NavBar() {
+export default function NavBar({ onSearch }) {
   const [search, setSearch] = React.useState("");
   const [auth, setAuth] = React.useState(false);
   const [user, setUser] = React.useState("");
@@ -21,6 +21,13 @@ export default function NavBar() {
   function handleSearch(e) {
     setSearch(e.target.value);
   }
+
+  useEffect(() => {
+    const sendData = setTimeout(() => {
+      onSearch(search);
+    }, 500);
+    return () => clearTimeout(sendData);
+  }, [search]);
 
   const fetchData = () => {
     const config = {
@@ -47,16 +54,15 @@ export default function NavBar() {
     localStorage.clear();
     setAuth(false);
     setUser("");
-    navigate("/");
+    navigate("/login");
   }
 
-  console.log(auth);
-  console.log(user);
+  console.log(search);
 
   return (
     <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
       <Container>
-        <Navbar.Brand href="#home" className="fs-3">
+        <Navbar.Brand href="/" className="fs-3">
           <strong>EasyFiles</strong>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -74,14 +80,14 @@ export default function NavBar() {
             </Form>
           </Nav>
           {auth ? (
-            <Nav className="ms-auto">
+            <Nav className="ms-auto d-flex align-items-center">
               <h3 className="text-white text-uppercase fw-bold me-3 user">
                 {user}
               </h3>
 
               <Button
                 variant="light"
-                className="fw-bold rounded-1 register text-primary"
+                className="fw-bold rounded-1 logout text-primary"
                 onClick={handleLogout}
               >
                 Logout
