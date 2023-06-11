@@ -7,10 +7,11 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import "../styles/Files.css";
 
-export default function AddFiles({ onAddFile }) {
+export default function AddFiles() {
   const [open, setOpen] = React.useState(false);
   const [file, setFile] = React.useState(null);
   const [access, setAccess] = React.useState("");
+  const [token, setToken] = React.useState(null);
 
   function openModal() {
     setOpen(true);
@@ -21,6 +22,10 @@ export default function AddFiles({ onAddFile }) {
     setAccess("");
     setFile(null);
   }
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -43,31 +48,15 @@ export default function AddFiles({ onAddFile }) {
         if (res.data.message === "File uploaded") {
           alert("File succesfuly uploaded");
           setOpen(false);
-          const fileObject = {
-            id: res.data.data.fileId,
-            name: file.name,
-            date: res.data.data.uploadTime,
-            akses: access,
-            link: res.data.data.fileLink,
-          };
-          const existingFiles =
-            JSON.parse(localStorage.getItem("dataFile")) || [];
-
-          const updatedFiles = [...existingFiles, fileObject];
-          localStorage.setItem("dataFile", JSON.stringify(updatedFiles));
         }
         console.log(res.data);
       })
       .catch((err) => {
         alert(err);
       });
-
-    const newFile = {
-      id: uuidv4(),
-      name: file.name,
-    };
-    onAddFile(newFile);
   }
+
+  console.log(access);
 
   return (
     <>
@@ -76,6 +65,7 @@ export default function AddFiles({ onAddFile }) {
         variant="outline-primary"
         size="sm"
         className="me-1"
+        disabled={!token}
       >
         <FontAwesomeIcon icon={faFileCirclePlus} />
       </Button>
@@ -91,7 +81,7 @@ export default function AddFiles({ onAddFile }) {
                 className="access"
                 onChange={(e) => setAccess(e.target.value)}
               >
-                <option value="Restricted">Restricted</option>
+                <option defaultValue="Restricted">Restricted</option>
                 <option value="FreeAccess">Free Access</option>
               </Form.Select>
             </Form.Group>

@@ -20,13 +20,13 @@ export default function Filter({ onFilter }) {
             className="dropdown"
             onClick={() => handleOnClick("Sort Ascending")}
           >
-            Sort by Size Ascending
+            Sort by Name Ascending
           </Dropdown.Item>
           <Dropdown.Item
             className="dropdown"
             onClick={() => handleOnClick("Sort Descending")}
           >
-            Sort by Size Descending
+            Sort by Name Descending
           </Dropdown.Item>
           <Dropdown.Item
             className="dropdown"
@@ -39,6 +39,18 @@ export default function Filter({ onFilter }) {
             onClick={() => handleOnClick("Sort Date Descending")}
           >
             Sort by Date Descending
+          </Dropdown.Item>
+          <Dropdown.Item
+            className="dropdown"
+            onClick={() => handleOnClick("FreeAccess")}
+          >
+            Free Access
+          </Dropdown.Item>
+          <Dropdown.Item
+            className="dropdown"
+            onClick={() => handleOnClick("Own")}
+          >
+            Own
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

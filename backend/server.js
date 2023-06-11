@@ -6,11 +6,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
+app.use(cors());
 // app.use(cookieParser());
 
 //Dotenv init
@@ -802,7 +798,7 @@ const getUserFiles = async (req, res) => {
     if (notFound) throw "Files not found";
 
     res.json({
-      message: "User files retrieved",
+      message: "Files retrieved",
       data: queryResult.rows,
     });
   } catch (error) {
@@ -812,7 +808,7 @@ const getUserFiles = async (req, res) => {
 		});
   }
 };
-app.get(`/getFile`, authUser, getUserFiles);
+app.get(`/getFile`, getUserFiles);
 
 const getUserFolder = async (req, res) => {
   await db.connect(checkForError);
