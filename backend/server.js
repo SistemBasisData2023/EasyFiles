@@ -17,6 +17,7 @@ const {
   uploadBytes,
   getDownloadURL,
   updateMetadata,
+  deleteObject
 } = require("firebase/storage");
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_APIKEY,
@@ -698,14 +699,84 @@ const viewFolderContent = async (req, res) => {
 
 	
 }
-app.get(`/:rootFolderId`, authUser, viewFolderContent);
+app.get(`/:rootFolderId/view`, authUser, viewFolderContent);
 
-const searchFiles = async (req, res) => {
+// ====== FILE DELETE API ======
+const deleteFile = async (req, res) => {
+	try {
+		const { fileId } = req.params;
 	
-}
-app.get(`/search`, authUser, searchFiles);
+		const queryResult = await db.query(`SELECT * FROM files WHERE fileId = '${fileId}'`);
+		
+		const notFound = (queryResult.rows.length === 0);
+		if (notFound) {
+			res.send("File not found");
+			return;
+		}	
+	
+		const fileToDelete = queryResult.rows[0];
+		
+		// Check if the user has permission to delete the file
+		const accessDenied = (fileToDelete.userpemilik !== req.user);
+		
+		if (accessDenied) {
+			res.send("Access denied");
+			return;
+		}
 
+		//res.send(filePath); return
 
+		try {
+			const fileRef = ref(getStorage(), `${fileToDelete.directoryid}/${fileToDelete.namafile}`);
+			await deleteObject(fileRef);
+			console.log("File successfully deleted from Firebase Storage");
+		} catch (error) {
+			console.error("Error deleting file from Firebase Storage:", error);
+		}
+		
+		// Delete the file entry from the database
+		await db.query(`DELETE FROM files WHERE fileId = '${fileId}'`);
+	
+		res.send("File successfully deleted");
+	} catch (err) {
+		res.send("Unknown error while deleting file");
+	}
+};
+app.delete(`/:fileId/delete`, authUser, deleteFile);
+
+// ====== FILE SEARCH API =====
+const searchInTable = async (req, res) => {
+	try {
+		const { searchTerm } = req.body;
+		const {user} = req;
+	
+		const searchQuery = `
+			(SELECT * 
+			FROM files 
+			WHERE namafile ILIKE '%${searchTerm}%'
+			AND userpemilik = '${user}')
+			UNION 
+			(SELECT * 
+			FROM files 
+			WHERE namafile ILIKE '%${searchTerm}%'
+			AND skemaakses = 'FreeAccess')
+		`;
+	
+		const result = await db.query(searchQuery);
+	
+		res.json({
+			message: "Search results",
+			data: result.rows,
+		});
+	} catch (error) {
+		console.error("Error searching in table:", error);
+		res.json({
+			message: "Error searching in table",
+			error: error,
+		});
+	} 
+};
+app.get("/search", authUser, searchInTable);
 
 app.listen(9999, () => {
   console.log("Listening to Port 9999.");
