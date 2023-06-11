@@ -22,7 +22,11 @@ const {
   getDownloadURL,
   updateMetadata,
 <<<<<<< HEAD
+<<<<<<< HEAD
   deleteObject,
+=======
+  deleteObject
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 =======
   deleteObject
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
@@ -131,7 +135,11 @@ const register = async (req, res) => {
 	if(password.length < 8) throw "ERROR: Password must at least have 8 characters";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     //Check for username availability
+=======
+	//Check for username availability
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 =======
 	//Check for username availability
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
@@ -142,6 +150,7 @@ const register = async (req, res) => {
       throw "Username taken";
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     //Hash user password
     const salt = await bcrypt.genSalt(10);
@@ -155,13 +164,24 @@ const register = async (req, res) => {
 
 	//Add user to database
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
+=======
+	//Hash user password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(password, salt);
+
+	//Add user to database
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
     await db.query(
       `INSERT INTO userTable VALUES (
 		'${username}', 
 		'${hashedPass}', 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		'${nama}');`
     );
+=======
+		'${nama}');`);
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 =======
 		'${nama}');`);
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
@@ -170,7 +190,11 @@ const register = async (req, res) => {
     const folderId = await nanoid();
     const namaFolder = nama + " Personal Folder";
 <<<<<<< HEAD
+<<<<<<< HEAD
     const skemaAkses = "Restricted";
+=======
+    const skemaAkses = 'Restricted';
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 =======
     const skemaAkses = 'Restricted';
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
@@ -179,7 +203,11 @@ const register = async (req, res) => {
     const userPemilik = username;
     await db.query(
 <<<<<<< HEAD
+<<<<<<< HEAD
       `INSERT INTO folder VALUES (
+=======
+	  `INSERT INTO folder VALUES (
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 =======
 	  `INSERT INTO folder VALUES (
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
@@ -189,6 +217,7 @@ const register = async (req, res) => {
 	  '${currentTime}', 
 	  '${rootFolderId}',
 <<<<<<< HEAD
+<<<<<<< HEAD
 	  '${userPemilik}');`
     );
 
@@ -197,12 +226,17 @@ const register = async (req, res) => {
       `UPDATE userTable SET personalfolder='${folderId}' WHERE username='${username}';`
     );
 =======
+=======
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 	  '${userPemilik}');`);
 	  
 	//Add personal folder to user database
 	await db.query(
 		`UPDATE userTable SET personalfolder='${folderId}' WHERE username='${username}';`
 	);
+<<<<<<< HEAD
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
+=======
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 
     res.json({
@@ -264,6 +298,7 @@ function authUser(req, res, next) {
 const uploadFile = async (req, res) => {
   try {
 <<<<<<< HEAD
+<<<<<<< HEAD
     //Retrieve relevant data
     const fileToUpload = req.file;
     const { skemaAkses } = req.body;
@@ -298,6 +333,19 @@ const uploadFile = async (req, res) => {
     if (fileToUpload == null) {
       throw "No file attached";
     }
+=======
+	
+    //Retrieve relevant data
+    const fileToUpload = req.file;
+	const { skemaAkses } = req.body;
+	const { currentDir } = req.params;
+	
+	
+	//Error handling
+    if (fileToUpload == null) {
+      throw "No file attached";
+    }
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 	if(skemaAkses != 'Restricted' && skemaAkses != 'FreeAccess'){
 		throw "Error while parsing Access Scheme field";
 	}
@@ -312,6 +360,9 @@ const uploadFile = async (req, res) => {
 	if (notFound) {
 	  throw "Folder does not exists";
 	}
+<<<<<<< HEAD
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
+=======
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 
     //Upload file to firebase
@@ -333,7 +384,11 @@ const uploadFile = async (req, res) => {
     const currentTime = DateTime.now().toFormat("MM-dd-yyyy hh:mm:ss");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     //Send query to DB
+=======
+	//Send query to DB
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 =======
 	//Send query to DB
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
@@ -365,7 +420,11 @@ const uploadFile = async (req, res) => {
     res.json({
       message: "Error while uploading",
 <<<<<<< HEAD
+<<<<<<< HEAD
       error: error,
+=======
+      error: error
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 =======
       error: error
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
@@ -378,6 +437,7 @@ const downloadFile = async (req, res) => {
   try {
     const { fileId } = req.params;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     //Retrieve file from DB
     const queryResult = await db.query(
@@ -788,30 +848,46 @@ const deleteFile = async (req, res) => {
     const queryResult = await db.query(
       `SELECT * FROM files WHERE fileId = '${fileId}'`
     );
+=======
+	//Retrieve file from DB
+    const queryResult = await db.query(
+      `SELECT * FROM files WHERE fileId = '${fileId}'`
+    );
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
     
     //Check for file existence
     const notFound = queryResult.rows.length == 0;
     if (notFound) {
       throw "Files not found";
+<<<<<<< HEAD
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
+=======
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
     }
 
     const fileToDelete = queryResult.rows[0];
 
+<<<<<<< HEAD
     // Check if the user has permission to delete the file
     const accessDenied = fileToDelete.userpemilik !== req.user;
 
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 	//Check access scheme
     const accessDenied =
       filesToDownload.skemaakses === `Restricted` &&
       filesToDownload.userpemilik !== req.user;
+<<<<<<< HEAD
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
+=======
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
     if (accessDenied) {
       throw "Access denied";
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     const fileRef = ref(
       getStorage(),
@@ -829,6 +905,8 @@ const deleteFile = async (req, res) => {
       error: error,
     });
 =======
+=======
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 	//Redirect to download link
     res.redirect(filesToDownload.filelink);
     
@@ -837,11 +915,15 @@ const deleteFile = async (req, res) => {
 		message: "Error whlle downloading",
 		error: error,
 	});
+<<<<<<< HEAD
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
+=======
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
   }
 };
 app.delete(`/:fileId/delete`, authUser, deleteFile);
 
+<<<<<<< HEAD
 // ====== FILE SEARCH API =====
 const searchInTable = async (req, res) => {
   try {
@@ -876,6 +958,8 @@ const searchInTable = async (req, res) => {
 };
 app.get("/search", authUser, searchInTable);
 
+=======
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 //====== FILE VIEW AND ORGANIZATION ======
 const createFolder = async (req, res) =>{
 	try{
@@ -1331,6 +1415,7 @@ const getUserFiles = async (req, res) => {
     const queryResult = await db.query(
       `SELECT * FROM files`
     );
+<<<<<<< HEAD
 
     const notFound = queryResult.rows.length == 0;
     if (notFound) throw "Files not found";
@@ -1358,13 +1443,21 @@ const getUserFolders = async (req, res) => {
       res.send("Folder not found");
       return;
     }
+=======
+
+    const notFound = queryResult.rows.length == 0;
+    if (notFound) throw "Files not found";
+>>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
 
     res.json({
       message: "Folder retrieved",
       data: queryResult.rows,
     });
-  } catch (err) {
-    res.send(err);
+  } catch (error) {
+		res.json({
+			message: "Error fetching files",
+			error: error,
+		});
   }
 };
 app.get(`/getFolder`, getUserFolders);
@@ -1394,6 +1487,31 @@ const getUserFolder = async (req, res) => {
 app.get(`/getFolder`, authUser, getUserFolder);
 
 >>>>>>> 3aff1c2e07da81b49e9e56e43607222b15a82a26
+
+const getUserFolder = async (req, res) => {
+  await db.connect(checkForError);
+  try {
+    const queryResult = await db.query(
+      `SELECT * FROM folder`
+    );
+
+    const notFound = queryResult.rows.length == 0;
+    if (notFound) throw "Folder not found";
+
+    res.json({
+      message: "User folder retrieved",
+      data: queryResult.rows,
+    });
+  } catch (error) {
+	res.json({
+		message: "Error fetching folder",
+		error: error,
+	});
+   }
+  await db.end()
+};
+app.get(`/getFolder`, authUser, getUserFolder);
+
 
 app.listen(9999, () => {
   console.log("Listening to Port 9999.");
