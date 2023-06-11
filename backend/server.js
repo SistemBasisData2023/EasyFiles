@@ -170,8 +170,6 @@ const register = async (req, res) => {
 		`UPDATE userTable SET personalfolder='${folderId}' WHERE username='${username}';`
 	);
 
-
-
     res.json({
       message: "Registration succesful",
     });
@@ -184,12 +182,13 @@ const register = async (req, res) => {
 };
 app.post(`/register`, register);
 
+/*
 app.get(`/`, authUser, (req, res) => {
   return res.json({
     message: "Success",
     user: req.user,
   });
-});
+});*/
 
 function authUser(req, res, next) {
 	try{
@@ -234,7 +233,7 @@ const uploadFile = async (req, res) => {
     if (fileToUpload == null) {
       throw "No file attached";
     }
-	if(skemaAkses != 'Restricted' || skemaAkses != 'FreeAccess'){
+	if(skemaAkses != 'Restricted' && skemaAkses != 'FreeAccess'){
 		throw "Error while parsing Access Scheme field";
 	}
 	if(!currentDir) throw "No current directory specified";
@@ -242,14 +241,12 @@ const uploadFile = async (req, res) => {
 		
 	//Check for currentDir existence
 	checkRootExists = await db.query(
-	  `SELECT * FROM folder WHERE folderid = '${rootFolderId}';`
+	  `SELECT * FROM folder WHERE folderid = '${currentDir}';`
 	);
 	const notFound = checkRootExists.rows.length == 0;
 	if (notFound) {
 	  throw "Folder does not exists";
 	}
-	
-    
 
     //Upload file to firebase
     const storageRef = ref(
@@ -294,14 +291,14 @@ const uploadFile = async (req, res) => {
         userPemilik: req.user,
       },
     });
-  } catch (err) {
+  } catch (error) {
     res.json({
       message: "Error while uploading",
       error: error
     });
   }
 };
-app.post(`/:rootFolderId/upload`, authUser, upload.single("files"), uploadFile);
+app.post(`/:currentDir/upload`, authUser, upload.single("files"), uploadFile);
 
 const downloadFile = async (req, res) => {
   try {
@@ -323,22 +320,22 @@ const downloadFile = async (req, res) => {
 	//Check access scheme
     const accessDenied =
       filesToDownload.skemaakses === `Restricted` &&
-      filesToDownload.userpemilik !== req.username;
+      filesToDownload.userpemilik !== req.user;
     if (accessDenied) {
-      res.send("Access denied");
-      return;
+      throw "Access denied";
     }
 
 	//Redirect to download link
     res.redirect(filesToDownload.filelink);
     
   } catch (err) {
-    res.send("Unknown error while downloading file");
+	res.json({
+		message: "Error whlle downloading",
+		error: error,
+	});
   }
 };
 app.get(`/:fileId/download`, authUser, downloadFile);
-
-<<<<<<< HEAD
 
 //====== FILE VIEW AND ORGANIZATION ======
 const createFolder = async (req, res) =>{
@@ -730,8 +727,7 @@ const deleteFile = async (req, res) => {
 		
 		const notFound = (queryResult.rows.length === 0);
 		if (notFound) {
-			res.send("File not found");
-			return;
+			throw "File not found";
 		}	
 	
 		const fileToDelete = queryResult.rows[0];
@@ -740,26 +736,22 @@ const deleteFile = async (req, res) => {
 		const accessDenied = (fileToDelete.userpemilik !== req.user);
 		
 		if (accessDenied) {
-			res.send("Access denied");
-			return;
+			throw "Access denied"
 		}
 
-		//res.send(filePath); return
-
-		try {
-			const fileRef = ref(getStorage(), `${fileToDelete.directoryid}/${fileToDelete.namafile}`);
-			await deleteObject(fileRef);
-			console.log("File successfully deleted from Firebase Storage");
-		} catch (error) {
-			console.error("Error deleting file from Firebase Storage:", error);
-		}
+		const fileRef = ref(getStorage(), `${fileToDelete.directoryid}/${fileToDelete.namafile}`);
+		await deleteObject(fileRef);
 		
 		// Delete the file entry from the database
 		await db.query(`DELETE FROM files WHERE fileId = '${fileId}'`);
 	
 		res.send("File successfully deleted");
 	} catch (err) {
-		res.send("Unknown error while deleting file");
+		console.error("Error searching in table:", error);
+		res.json({
+			message: "Error searching in table",
+			error: error,
+		});
 	}
 };
 app.delete(`/:fileId/delete`, authUser, deleteFile);
