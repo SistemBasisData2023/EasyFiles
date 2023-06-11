@@ -79,10 +79,10 @@ Berisi username pemilik folder
 
 ## Diagrams
 ### ER Diagram
-![alt text](https://github.com/SistemBasisData2023/EasyFiles/blob/main/ERDiagram_EasyFiles.png)
+![alt text](https://github.com/SistemBasisData2023/EasyFiles/blob/main/resources/ERDiagram_EasyFiles.png)
 
 ### UML Chart
-![alt text]()
+![alt text](https://github.com/SistemBasisData2023/EasyFiles/blob/main/resources/UMLDiagram_EasyFiles.png)
 
 ### Flowchart
 ![alt text]()
