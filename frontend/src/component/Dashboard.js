@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "./NavBar";
 import { Container } from "react-bootstrap";
 import AddFolder from "./AddFolder";
@@ -6,18 +6,45 @@ import AddFiles from "./AddFiles";
 import Filter from "./Filter";
 import Folder from "./Folder";
 import File from "./Files";
+import axios from "axios";
 
 export default function Dashboard() {
   const [folders, setFolders] = React.useState([]);
   const [files, setFiles] = React.useState([]);
+  const [search, setSearch] = React.useState("");
 
-  function addFo(newFolder) {
-    setFolders((prevFolders) => {
-      return [...prevFolders, newFolder];
-    });
-  }
+  const getFile = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
 
-  function addFi(newFile) {
+    axios
+      .get(
+        `http://localhost:9999/getFile`,
+        {
+          user: localStorage.getItem("username"),
+        },
+        config
+      )
+      .then((res) => {
+        if (res.data.message === "Success") {
+          setFiles(res.data.data);
+          alert(res.data.data);
+        } else {
+          alert(res.data);
+        }
+      });
+  };
+
+  useEffect(() => {
+    // const storedFile = JSON.parse(localStorage.getItem("dataFile")) || [];
+    // setFiles(storedFile);
+    getFile();
+  }, []);
+
+  function addFo(newFile) {
     setFiles((prevFiles) => {
       return [...prevFiles, newFile];
     });
@@ -41,15 +68,26 @@ export default function Dashboard() {
           return [...prevFolders].sort((a, b) => b.name.localeCompare(a.name));
         });
         break;
+      case "Sort Date Ascending":
+        setFiles((prevFiles) => {
+          return [...prevFiles].sort((a, b) => a.date.localeCompare(b.date));
+        });
+        break;
+      case "Sort Date Descending":
+        setFiles((prevFiles) => {
+          return [...prevFiles].sort((a, b) => b.date.localeCompare(a.date));
+        });
+        break;
       default:
         break;
     }
   }
+  console.log(files);
 
   return (
     <>
       <div className="bg-light min-vh-100">
-        <Navbar />
+        <Navbar className="fixed-top" />
         <Container className="mt-3">
           <div className="d-flex align-items-center justify-content-between">
             <div>
@@ -57,7 +95,7 @@ export default function Dashboard() {
             </div>
             <div className="d-flex">
               <Filter onFilter={handleFilter} />
-              <AddFiles onAddFile={addFi} />
+              <AddFiles />
               <AddFolder onAddFolder={addFo} />
             </div>
           </div>

@@ -2,29 +2,50 @@ import React, { useState } from "react";
 import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+// import { AuthContext } from "../../App";
 import axios from "axios";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  // const { dispatch } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
   async function validateForm(e) {
     e.preventDefault();
+    //fetch data dari server.js di folder backend
+    const config = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    };
 
-    // await axios
-    //   .post("http://localhost:9999/login", {
-    //     username: username,
-    //     password: password,
-    //   })
-    //   .then((response) => {
-    //     alert(response.data.message);
-    //   })
-    //   .catch((error) => {
-    //     alert(error.message);
-    //   });
+    await axios
+      .post(
+        "http://localhost:9999/login",
+        {
+          username: username,
+          password: password,
+        },
+        config
+      )
+      .then((res) => {
+        if (res.data.message === "Login succesful") {
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("username", res.data.data.username);
+          navigate("/");
+        } else {
+          setError(res.data);
+        }
+      })
+      .catch((err) => {
+        alert(err);
+      });
   }
+  console.log(username);
+  console.log(password);
 
   return (
     <>
@@ -66,7 +87,7 @@ const Login = () => {
                     placeholder="******"
                     className="rounded-3"
                     required
-                    onAbort={(e) => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </Form.Group>
 

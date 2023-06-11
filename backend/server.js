@@ -2,8 +2,16 @@
 const express = require("express");
 const bp = require("body-parser");
 const app = express();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
+// app.use(cookieParser());
 
 //Dotenv init
 const dotenv = require("dotenv");
@@ -20,19 +28,20 @@ const {
   deleteObject
 } = require("firebase/storage");
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_APIKEY,
-  authDomain: process.env.FIREBASE_AUTHDOMAIN,
-  projectId: process.env.FIREBASE_PROJECTID,
-  storageBucket: process.env.FIREBASE_STORAGEBUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
-  appId: process.env.FIREBASE_APPID,
+  apiKey: "AIzaSyCIgEfUm6wsJ0kD28tb3_Y0FZa9RC6MO5M",
+  authDomain: "easyfiles-1cf32.firebaseapp.com",
+  projectId: "easyfiles-1cf32",
+  storageBucket: "easyfiles-1cf32.appspot.com",
+  messagingSenderId: "863853774202",
+  appId: "1:863853774202:web:65a52ec936c852c0e202c3",
 };
 firebase.initializeApp(firebaseConfig);
 
 //PostgreSQL database init
 const { Client } = require("pg");
 const db = new Client({
-  connectionString: process.env.SQL_CONNSTRING,
+  connectionString:
+    "postgres://agungfir20:s1FYO0nBvxiE@ep-yellow-shape-568138.ap-southeast-1.aws.neon.tech/test_pa",
   sslmode: "require",
   ssl: true,
 });
@@ -69,9 +78,8 @@ const login = async (req, res) => {
 	}
 
     queryResult = await db.query(
-      `SELECT * FROM userTable WHERE userName = '${username}';`
+      `SELECT * FROM usertable WHERE userName = '${username}';`
     );
-	
 	const notFound = queryResult.rows.length == 0;
     if (notFound) {
       throw "Invalid username or password";
@@ -94,6 +102,8 @@ const login = async (req, res) => {
     userToken = jwt.sign(userIdentifier, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+
+    // res.cookie("token", userToken);
 
     res.json({
       message: "Login succesful",
@@ -174,18 +184,14 @@ const register = async (req, res) => {
 };
 app.post(`/register`, register);
 
-app.post(`/logout`, async (req, res) => {
-  try {
-    //Implement this later
-  } catch (error) {
-    res.json({
-      message: "Unknown Error",
-      error: error,
-    });
-  }
+app.get(`/`, authUser, (req, res) => {
+  return res.json({
+    message: "Success",
+    user: req.user,
+  });
 });
 
-function authUser(req, res, nex) {
+function authUser(req, res, next) {
 	try{
 		const authHeader = req.headers["authorization"];
 
@@ -195,6 +201,8 @@ function authUser(req, res, nex) {
 
 		//Get the token part
 		const token = authHeader.split(" ")[1];
+		
+		// const token = req.cookies.token;
 
 		jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
 		if (err){
@@ -202,7 +210,7 @@ function authUser(req, res, nex) {
 		}
 		req.user = payload.username;
 		req.nama = payload.nama;
-		nex();
+		next();
 		});
 	} 
 	catch(error){
@@ -211,7 +219,6 @@ function authUser(req, res, nex) {
 			error: error
 		});
 	}
-		
 }
 
 //====== FILE UPLOAD/DOWNLOAD API ======
@@ -274,7 +281,19 @@ const uploadFile = async (req, res) => {
 			'${fileLink}'
 			)`);
 
-    res.send("File succesfuly uploaded");
+    res.json({
+      message: "File uploaded",
+      data: {
+        fileId: fileId,
+        fileName: fileToUpload.originalname,
+        fileSize: filesize,
+        fileLink: fileLink,
+        skemaAkses: skemaAkses,
+        uploadTime: currentTime,
+        currentDir: currentDir,
+        userPemilik: req.user,
+      },
+    });
   } catch (err) {
     res.json({
       message: "Error while uploading",
@@ -303,8 +322,8 @@ const downloadFile = async (req, res) => {
 
 	//Check access scheme
     const accessDenied =
-      filesToDownload.skemaakses == `Restricted` &&
-      filesToDownload.userpemilik != req.user;
+      filesToDownload.skemaakses === `Restricted` &&
+      filesToDownload.userpemilik !== req.username;
     if (accessDenied) {
       res.send("Access denied");
       return;
@@ -319,6 +338,7 @@ const downloadFile = async (req, res) => {
 };
 app.get(`/:fileId/download`, authUser, downloadFile);
 
+<<<<<<< HEAD
 
 //====== FILE VIEW AND ORGANIZATION ======
 const createFolder = async (req, res) =>{
@@ -777,6 +797,30 @@ const searchInTable = async (req, res) => {
 	} 
 };
 app.get("/search", authUser, searchInTable);
+
+/*
+const getUserFiles = async (req, res) => {
+  try {
+    const queryResult = await db.query(
+      `SELECT * FROM files WHERE userpemilik = '${req.user}'`
+    );
+
+    const notFound = queryResult.rows.length == 0;
+    if (notFound) {
+      res.send("Files not found");
+      return;
+    }
+
+    res.json({
+      message: "User files retrieved",
+      data: queryResult.rows,
+    });
+  } catch (err) {
+    res.send(err);
+  }
+};
+app.get(`/getFile`, authUser, getUserFiles);
+*/
 
 app.listen(9999, () => {
   console.log("Listening to Port 9999.");

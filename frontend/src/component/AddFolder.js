@@ -15,6 +15,7 @@ export default function AddFolder({ onAddFolder }) {
 
   function closeModal() {
     setOpen(false);
+    setName("");
   }
 
   function handleSubmit(e) {
@@ -38,7 +39,9 @@ export default function AddFolder({ onAddFolder }) {
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
             <Form.Group>
-              <Form.Label>Folder Name</Form.Label>
+              <Form.Label>
+                <strong>Add Folder</strong>
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter folder name"
