@@ -85,4 +85,4 @@ Berisi username pemilik folder
 ![alt text](https://github.com/SistemBasisData2023/EasyFiles/blob/main/resources/UMLDiagram_EasyFiles.png)
 
 ### Flowchart
-![alt text]()
+![alt text](https://github.com/SistemBasisData2023/EasyFiles/blob/main/resources/Flowchart_EasyFiles.png)
